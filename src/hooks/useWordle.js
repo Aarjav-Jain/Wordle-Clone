@@ -16,6 +16,11 @@ const useWordle = (randomWord, allWords) => {
       (data) => data.toUpperCase() === word.toUpperCase()
     );
 
+    const newBoard = [...board];
+    const row = newBoard[guessNo];
+    const solution = [...randomWord];
+    let correct = false;
+
     // if valid word does not exists
     if (!isExist) {
       console.log("word does not exists TRY AGAIN");
@@ -34,111 +39,62 @@ const useWordle = (randomWord, allWords) => {
     else {
       // case1:
       if (word.toUpperCase() === randomWord.toUpperCase()) {
-        setBoard((prevState) => {
-          const newBoard = prevState;
-          const row = newBoard[guessNo];
-          row.map((cell) => {
+        row.map((cell) => {
+          cell.color = "white";
+          cell.borderColor = "#6aaa64";
+          cell.bgColor = "#6aaa64";
+        });
+        correct = true;
+      } else {
+        //case2: TURN GREEN
+        // we simultaneouly set solution[index] to a random char so that it is not used multiple times for comparision
+
+        row.map((cell, index) => {
+          if (cell.text.toUpperCase() === solution[index].toUpperCase()) {
+            solution[index] = "*";
             cell.color = "white";
             cell.borderColor = "#6aaa64";
             cell.bgColor = "#6aaa64";
-          });
-          return newBoard;
-        });
-        setCorrect(true);
-        setGameOver(true);
-        return;
-      } else {
-        let solution = [...randomWord];
-        const row = board[guessNo];
-
-        // to collect all indices of correct positions
-        let correctPositions = [];
-
-        //case2:
-        // we simultaneouly set solution[index] to a random char so that it is not used multiple times for comparision
-        row.map((cell, index) => {
-          if (
-            cell.text.toUpperCase() === solution[index].toUpperCase() &&
-            !cell.isChecked
-          ) {
-            solution[index] = "*";
-            correctPositions.push(index);
-            cell.isChecked = true;
           }
         });
 
         // now set all the stored indices in correctPositions array to green
-        // NOTE:- a) we never set a value(useState hook) inside a loop
-        // b) also always create a new array/object to modify and set the values
-        setBoard((prevState) => {
-          // new array created to set the values
-          const newBoard = prevState;
-          const row = newBoard[guessNo];
 
-          correctPositions.map((value) => {
-            const cell = row[value];
-            cell.color = "white";
-            cell.borderColor = "#6aaa64";
-            cell.bgColor = "#6aaa64";
-            cell.isChecked = true;
-          });
-          return newBoard;
-        });
-
-        // case3:
-        let yellowPositions = [];
+        // case3: TURN YELLOW
         row.map((cell, index) => {
-          if (cell.bgColor !== "#6aaa64" && !cell.isChecked) {
+          if (cell.bgColor !== "#6aaa64") {
             const pos = solution.indexOf(cell.text);
-
             if (pos !== -1) {
               solution[pos] = "*";
-              yellowPositions.push(index);
-              cell.isChecked = true;
+              cell.color = "white";
+              cell.borderColor = "#c9b458";
+              cell.bgColor = "#c9b458";
             }
           }
         });
 
-        setBoard((prevState) => {
-          const newBoard = prevState;
-          const row = newBoard[guessNo];
-
-          yellowPositions.map((val) => {
-            const cell = row[val];
+        // case 4: TURN GREY
+        row.map((cell, index) => {
+          if (cell.bgColor !== "#c9b458" && cell.bgColor !== "#6aaa64") {
             cell.color = "white";
-            cell.borderColor = "#c9b458";
-            cell.bgColor = "#c9b458";
-            cell.isChecked = true;
-          });
-          return newBoard;
-        });
-
-        // case 4:
-        setBoard((prevState) => {
-          const newBoard = prevState;
-          const row = newBoard[guessNo];
-          row.map((cell, index) => {
-            if (
-              cell.bgColor !== "#c9b458" &&
-              cell.bgColor !== "#6aaa64" &&
-              !cell.isChecked
-            ) {
-              cell.color = "white";
-              cell.borderColor = "#878a8c";
-              cell.bgColor = "#787c7e";
-            }
-          });
-
-          return newBoard;
+            cell.borderColor = "#878a8c";
+            cell.bgColor = "#787c7e";
+          }
         });
       }
-
-      //Increase guess count
-      setGuessNo((prevNo) => prevNo + 1);
-
-      // Reset to default
-      setNoOfLetters(0);
-      setWord("");
+    }
+    // NOTE:- a) we never set a value(useState hook) inside a loop
+    // b) also always create a new array/object to modify and set the values
+    // so here i have created a copy of board named as newBoard and after doing all changes I will setBoard as newBoard;
+    setBoard(newBoard);
+    //Increase guess count
+    setGuessNo((prevNo) => prevNo + 1);
+    // Reset to default
+    setNoOfLetters(0);
+    setWord("");
+    if (correct) {
+      setCorrect(true);
+      setGameOver(true);
     }
   };
 
@@ -154,7 +110,7 @@ const useWordle = (randomWord, allWords) => {
         setBoard((prevState) => {
           const newBoard = prevState;
           const row = newBoard[guessNo];
-          const [cell] = row.filter((data) => data.id === noOfLetters);
+          const cell = row[noOfLetters];
           cell.color = "black";
           cell.borderColor = "black";
           cell.text = s;
@@ -167,7 +123,7 @@ const useWordle = (randomWord, allWords) => {
         setBoard((prevState) => {
           const newBoard = prevState;
           const row = newBoard[guessNo];
-          const [cell] = row.filter((data) => data.id === noOfLetters - 1);
+          const cell = row[noOfLetters - 1];
           cell.color = "black";
           cell.borderColor = "#bbb";
           cell.text = "";
@@ -194,14 +150,6 @@ const useWordle = (randomWord, allWords) => {
           text: "",
           bgColor: "white",
           borderColor: "#bbb",
-          // isChecked is used to handle corner cases in which there are one than one same letter by marking if it state has been decide or not to avoid overwritting
-
-          //e.g. randomWord : CODEC
-          //           guess: CACHE
-          // Now here if do not use an extra variable like isChecked to not allow comparision to cells which are already set.
-          //PROBLEM:
-
-          isChecked: false,
         });
     }
     setBoard(board);
