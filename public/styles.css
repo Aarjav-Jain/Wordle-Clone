@@ -1,0 +1,38 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Xanh+Mono&display=swap"); */
+* {
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+}
+body {
+  font-size: 1em;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.heading {
+  /* background-color: gold; */
+  font-size: 1.2em;
+  font-weight: 600;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 0.7px solid rgb(207, 206, 206);
+  margin-bottom: 30px;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+.row > div {
+  display: block;
+  height: 60px;
+  width: 60px;
+  border: 2px solid #bbb;
+  margin: 4px;
+  text-align: center;
+  line-height: 60px;
+  font-weight: bold;
+  font-size: 2.5em;
+  text-transform: uppercase;
+}
