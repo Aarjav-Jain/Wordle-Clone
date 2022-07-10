@@ -14,7 +14,7 @@ function App() {
   return (
     <div>
       <Heading />
-      {loading && <h1>Loading...</h1>}
+      {loading && <div className="loader"></div>}
       {!loading && !error && (
         <div>
           {console.log(randomWord)}

@@ -2,10 +2,9 @@ import React from "react";
 
 const Cell = (props) => {
   const { value } = props;
-  const { color, bgColor, borderColor, id, text } = value;
+  const { bgColor, borderColor, text } = value;
 
   const customStyle = {
-    color: color,
     backgroundColor: bgColor,
     borderColor: borderColor,
   };

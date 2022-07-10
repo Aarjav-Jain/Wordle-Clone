@@ -40,7 +40,6 @@ const useWordle = (randomWord, allWords) => {
       // case1:
       if (word.toUpperCase() === randomWord.toUpperCase()) {
         row.map((cell) => {
-          cell.color = "white";
           cell.borderColor = "#6aaa64";
           cell.bgColor = "#6aaa64";
         });
@@ -52,7 +51,6 @@ const useWordle = (randomWord, allWords) => {
         row.map((cell, index) => {
           if (cell.text.toUpperCase() === solution[index].toUpperCase()) {
             solution[index] = "*";
-            cell.color = "white";
             cell.borderColor = "#6aaa64";
             cell.bgColor = "#6aaa64";
           }
@@ -66,7 +64,6 @@ const useWordle = (randomWord, allWords) => {
             const pos = solution.indexOf(cell.text);
             if (pos !== -1) {
               solution[pos] = "*";
-              cell.color = "white";
               cell.borderColor = "#c9b458";
               cell.bgColor = "#c9b458";
             }
@@ -76,8 +73,7 @@ const useWordle = (randomWord, allWords) => {
         // case 4: TURN GREY
         row.map((cell, index) => {
           if (cell.bgColor !== "#c9b458" && cell.bgColor !== "#6aaa64") {
-            cell.color = "white";
-            cell.borderColor = "#878a8c";
+            cell.borderColor = "#787c7e";
             cell.bgColor = "#787c7e";
           }
         });
@@ -99,6 +95,8 @@ const useWordle = (randomWord, allWords) => {
   };
 
   const handleKey = ({ key }) => {
+    const newBoard = [...board];
+    const row = newBoard[guessNo];
     if (!isGameOver && !isCorrect) {
       const s = key;
       if (noOfLetters === 0 && guessNo === 6) {
@@ -107,35 +105,22 @@ const useWordle = (randomWord, allWords) => {
       }
       if (noOfLetters < 5 && /^[A-Za-z]$/.test(s)) {
         setWord((prevState) => prevState + s);
-        setBoard((prevState) => {
-          const newBoard = prevState;
-          const row = newBoard[guessNo];
-          const cell = row[noOfLetters];
-          cell.color = "black";
-          cell.borderColor = "black";
-          cell.text = s;
-          return board;
-        });
+        const cell = row[noOfLetters];
+        cell.borderColor = "hsl(200, 1%, 34%)";
+        cell.text = s;
         setNoOfLetters((prevState) => prevState + 1);
-        return;
       } else if (noOfLetters !== 0 && s === "Backspace") {
         setWord((prevState) => prevState.substring(0, prevState.length - 1));
-        setBoard((prevState) => {
-          const newBoard = prevState;
-          const row = newBoard[guessNo];
-          const cell = row[noOfLetters - 1];
-          cell.color = "black";
-          cell.borderColor = "#bbb";
-          cell.text = "";
-          return board;
-        });
+        const cell = row[noOfLetters - 1];
+        cell.borderColor = "hsl(240, 2%, 23%)";
+        cell.text = "";
         setNoOfLetters((prevState) => prevState - 1);
-        return;
       } else if (noOfLetters === 5 && s === "Enter") {
         setCorrect(check);
         return;
       }
     }
+    setBoard(newBoard);
   };
 
   // Initialize a new array for storing and formating guesses
@@ -146,10 +131,9 @@ const useWordle = (randomWord, allWords) => {
       for (let j = 0; j < 5; ++j)
         board[i].push({
           id: j,
-          color: "black",
           text: "",
-          bgColor: "white",
-          borderColor: "#bbb",
+          bgColor: "black",
+          borderColor: "hsl(240, 2%, 23%)",
         });
     }
     setBoard(board);
