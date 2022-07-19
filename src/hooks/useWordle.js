@@ -19,11 +19,10 @@ const useWordle = (randomWord, allWords) => {
     const newBoard = [...board];
     const row = newBoard[guessNo];
     const solution = [...randomWord];
-    let correct = false;
 
     // if valid word does not exists
     if (!isExist) {
-      console.log("word does not exists TRY AGAIN");
+      console.log("word does not exist");
       return;
     }
 
@@ -39,11 +38,9 @@ const useWordle = (randomWord, allWords) => {
     else {
       // case1:
       if (word.toUpperCase() === randomWord.toUpperCase()) {
-        row.map((cell) => {
-          cell.borderColor = "#6aaa64";
-          cell.bgColor = "#6aaa64";
-        });
-        correct = true;
+        row.map((cell) => (cell.class_name = "correct"));
+        setCorrect(true);
+        setGameOver(true);
       } else {
         //case2: TURN GREEN
         // we simultaneouly set solution[index] to a random char so that it is not used multiple times for comparision
@@ -51,31 +48,30 @@ const useWordle = (randomWord, allWords) => {
         row.map((cell, index) => {
           if (cell.text.toUpperCase() === solution[index].toUpperCase()) {
             solution[index] = "*";
-            cell.borderColor = "#6aaa64";
-            cell.bgColor = "#6aaa64";
+            cell.class_name = "correct";
           }
         });
 
         // now set all the stored indices in correctPositions array to green
 
         // case3: TURN YELLOW
-        row.map((cell, index) => {
-          if (cell.bgColor !== "#6aaa64") {
+        row.map((cell) => {
+          if (cell.class_name !== "correct") {
             const pos = solution.indexOf(cell.text);
             if (pos !== -1) {
               solution[pos] = "*";
-              cell.borderColor = "#c9b458";
-              cell.bgColor = "#c9b458";
+              cell.class_name = "wrong-placed";
             }
           }
         });
 
         // case 4: TURN GREY
-        row.map((cell, index) => {
-          if (cell.bgColor !== "#c9b458" && cell.bgColor !== "#6aaa64") {
-            cell.borderColor = "#787c7e";
-            cell.bgColor = "#787c7e";
-          }
+        row.map((cell) => {
+          if (
+            cell.class_name !== "correct" &&
+            cell.class_name !== "wrong-placed"
+          )
+            cell.class_name = "not-correct";
         });
       }
     }
@@ -88,10 +84,6 @@ const useWordle = (randomWord, allWords) => {
     // Reset to default
     setNoOfLetters(0);
     setWord("");
-    if (correct) {
-      setCorrect(true);
-      setGameOver(true);
-    }
   };
 
   const handleKey = ({ key }) => {
@@ -106,13 +98,13 @@ const useWordle = (randomWord, allWords) => {
       if (noOfLetters < 5 && /^[A-Za-z]$/.test(s)) {
         setWord((prevState) => prevState + s);
         const cell = row[noOfLetters];
-        cell.borderColor = "hsl(200, 1%, 34%)";
+        cell.class_name = "active";
         cell.text = s;
         setNoOfLetters((prevState) => prevState + 1);
       } else if (noOfLetters !== 0 && s === "Backspace") {
         setWord((prevState) => prevState.substring(0, prevState.length - 1));
         const cell = row[noOfLetters - 1];
-        cell.borderColor = "hsl(240, 2%, 23%)";
+        cell.class_name = "";
         cell.text = "";
         setNoOfLetters((prevState) => prevState - 1);
       } else if (noOfLetters === 5 && s === "Enter") {
@@ -130,10 +122,8 @@ const useWordle = (randomWord, allWords) => {
     for (let i = 0; i < 6; ++i) {
       for (let j = 0; j < 5; ++j)
         board[i].push({
-          id: j,
           text: "",
-          bgColor: "black",
-          borderColor: "hsl(240, 2%, 23%)",
+          class_name: "",
         });
     }
     setBoard(board);

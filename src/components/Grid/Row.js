@@ -5,7 +5,7 @@ const Row = ({ value }) => {
   return (
     <div className="row">
       {value.map((cell, index) => (
-        <Cell key={index} id={index} value={cell} />
+        <Cell key={index} value={cell} />
       ))}
     </div>
   );
